@@ -13,10 +13,7 @@ public:
     void start() const;
 
 private:
-    bool init_bsp() const;
-    bool init_services() const;
-
-    void init();
+    void root_thread();
 };
 
 }  // namespace fw

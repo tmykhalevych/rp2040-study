@@ -13,17 +13,13 @@
 #include <led_sender.hpp>
 #include <shell.hpp>
 
-// clang-format off
-#define REQUIRE(val) if (!(val)) return false
-// clang-format on
-
 namespace fw
 {
 
 Firmware::Firmware()
 {
-    const BaseType_t status = xTaskCreate(cmn::bind_to<Firmware, &Firmware::init>, "fw", configMINIMAL_STACK_SIZE, this,
-                                          fr::prio::REAL_TIME, nullptr);
+    const BaseType_t status = xTaskCreate(cmn::bind_to<Firmware, &Firmware::root_thread>, "root_thread",
+                                          configMINIMAL_STACK_SIZE, this, fr::prio::REAL_TIME, nullptr);
 
     ASSERT(status == pdPASS);
 }
@@ -33,35 +29,20 @@ void Firmware::start() const
     vTaskStartScheduler();
 }
 
-bool Firmware::init_bsp() const
+void Firmware::root_thread()
 {
     logger::create_and_start(logger::Severity::DEBUG);
+    LOG_INFO("init logger");
 
-    bool res = bsp::init();
     LOG_INFO("init bsp");
+    ASSERT(bsp::init());
 
-    return res;
-}
-
-bool Firmware::init_services() const
-{
     LOG_INFO("init firmware");
+    ASSERT(svc::create_and_start<Shell>());
+    ASSERT(svc::create_and_start<LedReceiver>());
+    ASSERT(svc::create_and_start<LedSender>());
 
-    REQUIRE(svc::create_and_start<Shell>());
-    REQUIRE(svc::create_and_start<LedReceiver>());
-    REQUIRE(svc::create_and_start<LedSender>());
-
-    auto led_sender_state = svc::get_state_for<LedSender>();
-    LOG_INFO("led sender init state: %u", led_sender_state);
-
-    return true;
-}
-
-void Firmware::init()
-{
-    ASSERT(init_bsp());
-    ASSERT(init_services());
-
+    LOG_INFO("start firmware");
     vTaskDelete(nullptr);
 }
 
