@@ -4,10 +4,12 @@
 #include <task.h>
 
 #include <assert.hpp>
+#include <bsp/chrono.hpp>
 #include <inplace_function.hpp>
 #include <mutex.hpp>
 #include <prohibit_copy_move.hpp>
 #include <singleton.hpp>
+#include <slice.hpp>
 
 #include <array>
 #include <ctime>
@@ -17,8 +19,7 @@
 namespace logger
 {
 
-static constexpr auto MAX_MESSAGE_LENGTH = 160;
-static constexpr auto MAX_HEADER_LENGTH = 80;
+static constexpr auto MAX_ENTRY_LENGTH = 160;
 static constexpr auto ENTRIES_DELIMITER = "\n";
 
 using SourceLoc = std::experimental::source_location;
@@ -36,30 +37,25 @@ enum class Severity : uint8_t
 class Logger
 {
 public:
-    Logger(Severity sev, get_timestamp_cb_t get_timestamp_cb)
-        : m_sev(sev), m_get_timestamp_cb(std::move(get_timestamp_cb))
-    {}
+    Logger(Severity sev) : m_sev(sev) {}
 
     template <typename... TArgs>
     void log(SourceLoc loc, Severity sev, std::string_view format, TArgs&&... args);
 
 private:
+    cmn::Slice<char> append_timestamp(cmn::Slice<char> buff, std::chrono::system_clock::time_point ts);
+    void print_entry();
+
     Severity m_sev;
-    get_timestamp_cb_t m_get_timestamp_cb;
-
-    std::array<char, MAX_HEADER_LENGTH> m_entry_header;
-    std::array<char, MAX_MESSAGE_LENGTH> m_entry_body;
-
     fr::Mutex m_mutex;
+    std::array<char, MAX_ENTRY_LENGTH> m_entry;
 };
 
 template <typename... TArgs>
 void Logger::log(SourceLoc loc, Severity sev, std::string_view format, TArgs&&... args)
 {
-    auto ts = m_get_timestamp_cb();
     if (m_sev < sev) return;
-
-    std::lock_guard lock(m_mutex);
+    const auto ts = bsp::chrono::system_clock::now();
 
     constexpr auto to_string = [](Severity sev) -> std::string_view {
         switch (sev) {
@@ -73,23 +69,44 @@ void Logger::log(SourceLoc loc, Severity sev, std::string_view format, TArgs&&..
         return {};
     };
 
+    std::lock_guard lock(m_mutex);
+
     const std::string_view file_path = loc.file_name();
-    // TODO: add milliseconds
-    const size_t offset = std::strftime(m_entry_header.data(), 30, "%Y-%m-%d-%H:%M:%S", std::localtime(&ts));
+    const auto entry_body = append_timestamp(cmn::as_slice(m_entry), ts);
 
-    std::snprintf(m_entry_header.data() + offset, m_entry_header.max_size() - offset, " [%s] [%s] [%s:%u] ",
-                  to_string(sev).data(), pcTaskGetName(nullptr),
-                  file_path.substr(file_path.find_last_of("/") + 1).data(), loc.line());
+    const auto offset =
+        std::snprintf(entry_body.data(), entry_body.size(), " [%s] [%s] [%s:%u] ", to_string(sev).data(),
+                      pcTaskGetName(nullptr), file_path.substr(file_path.find_last_of("/") + 1).data(), loc.line());
 
-    std::snprintf(m_entry_body.data(), m_entry_body.max_size(), format.data(), std::forward<TArgs>(args)...);
+    std::snprintf(m_entry.data() + offset, m_entry.size() - offset, format.data(), std::forward<TArgs>(args)...);
 
-    std::printf("%s%s%s", m_entry_header.data(), m_entry_body.data(), ENTRIES_DELIMITER);
+    print_entry();
+
+    m_entry.fill('\0');
 }
 
-inline void create_and_start(
-    Severity sev = Severity::INFO, get_timestamp_cb_t get_timestamp_cb = [] { return std::time(nullptr); })
+inline cmn::Slice<char> Logger::append_timestamp(cmn::Slice<char> buff, std::chrono::system_clock::time_point ts)
 {
-    cmn::Singleton<Logger>::emplace(sev, std::move(get_timestamp_cb));
+    using namespace std::chrono;
+
+    static constexpr auto date_format = "%Y-%m-%d_%H:%M:%S";
+    const uint ms = (duration_cast<milliseconds>(ts.time_since_epoch()) % seconds(1)).count();
+    std::time_t time = std::chrono::system_clock::to_time_t(ts);
+
+    std::tie(std::ignore, buff) = buff.cut(std::strftime(buff.data(), buff.size(), date_format, std::gmtime(&time)));
+    std::tie(std::ignore, buff) = buff.cut(std::snprintf(buff.data(), buff.size(), ".%u", ms));
+
+    return buff;
+}
+
+inline void Logger::print_entry()
+{
+    std::printf("%s%s", m_entry.data(), ENTRIES_DELIMITER);
+}
+
+inline void create_and_start(Severity sev = Severity::INFO)
+{
+    cmn::Singleton<Logger>::emplace(sev);
 }
 
 inline cmn::Singleton<Logger>::Ptr access()

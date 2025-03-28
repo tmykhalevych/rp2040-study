@@ -2,7 +2,7 @@
 #include <task.h>
 
 #include <assert.hpp>
-#include <bsp.hpp>
+#include <bsp/bsp.hpp>
 #include <firmware.hpp>
 #include <logger.hpp>
 #include <priority.hpp>

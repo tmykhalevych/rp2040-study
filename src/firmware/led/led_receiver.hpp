@@ -1,10 +1,10 @@
 #pragma once
 
+#include <bsp/status_led.hpp>
 #include <logger.hpp>
 #include <message.hpp>
 #include <service.hpp>
 #include <signal.hpp>
-#include <status_led.hpp>
 
 namespace fw
 {
