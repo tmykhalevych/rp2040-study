@@ -3,6 +3,9 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
+  "runArgs": [
+    "--privileged"
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -34,8 +37,5 @@
     "source=${localEnv:HOME}/.ssh,target=/root/.ssh,type=bind,consistency=cached"
   ],
   "postAttachCommand": "pre-commit install",
-  "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
-  "runArgs": [
-    "--privileged"
-  ]
+  "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}"
 }
