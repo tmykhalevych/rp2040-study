@@ -1,3 +1,3 @@
-add_library(logger INTERFACE)
-target_include_directories(logger INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(logger INTERFACE freertos common bsp)
+add_library(logger STATIC logger.cpp)
+target_include_directories(logger PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(logger PRIVATE freertos common bsp)

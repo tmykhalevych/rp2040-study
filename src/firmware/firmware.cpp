@@ -32,7 +32,6 @@ void Firmware::start() const
 void Firmware::root_thread()
 {
     logger::create_and_start(logger::Severity::DEBUG);
-    LOG_INFO("init logger");
 
     LOG_INFO("init bsp");
     ASSERT(bsp::init());
