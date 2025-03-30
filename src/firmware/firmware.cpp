@@ -16,10 +16,12 @@
 namespace fw
 {
 
+static constexpr auto ROOT_THREAD_STACK_SIZE = 512;
+
 Firmware::Firmware()
 {
     const BaseType_t status = xTaskCreate(cmn::bind_to<Firmware, &Firmware::root_thread>, "root_thread",
-                                          configMINIMAL_STACK_SIZE, this, fr::prio::REAL_TIME, nullptr);
+                                          ROOT_THREAD_STACK_SIZE, this, fr::prio::REAL_TIME, nullptr);
 
     ASSERT(status == pdPASS);
 }
