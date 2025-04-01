@@ -3,9 +3,10 @@ cmake_minimum_required(VERSION 3.19)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/fetch_dependency.cmake)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
-find_package(FreeRTOS  REQUIRED)
-find_package(RpPicoSDK REQUIRED)
-find_package(Etl       REQUIRED)
+find_package(FreeRTOS   REQUIRED)
+find_package(RpPicoSDK  REQUIRED)
+find_package(Etl        REQUIRED)
+find_package(SystemView REQUIRED) # TODO: Add for Debug build target only
 
 project(rp2040-study LANGUAGES C CXX)
 

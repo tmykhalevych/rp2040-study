@@ -1,5 +1,6 @@
 add_subdirectory(bsp)
 add_subdirectory(freertos)
+add_subdirectory(utils)
 add_subdirectory(firmware)
 
 set(application ${CMAKE_PROJECT_NAME})

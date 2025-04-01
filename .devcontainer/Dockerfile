@@ -26,7 +26,7 @@ RUN pip install pre-commit
 
 # Project dependencies
 RUN apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib gdb-multiarch \
-                       pkg-config libusb-1.0-0-dev usbutils libtool picocom
+                       pkg-config libusb-1.0-0-dev usbutils libtool picocom unzip
 
 # OpenOCD
 RUN mkdir /usr/src/openocd && \

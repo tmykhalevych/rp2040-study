@@ -1,3 +1,3 @@
-fetch_dependency(RpPicoSDK https://github.com/raspberrypi/pico-sdk 1.5.1)
+fetch_dependency_git(RpPicoSDK https://github.com/raspberrypi/pico-sdk 1.5.1)
 
-include($ENV{RPPICOSDK_PATH}/pico_sdk_init.cmake)
+include(${RPPICOSDK_PATH}/pico_sdk_init.cmake)
