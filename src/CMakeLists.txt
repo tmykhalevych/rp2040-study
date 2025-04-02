@@ -1,7 +1,10 @@
 add_subdirectory(bsp)
 add_subdirectory(freertos)
-add_subdirectory(utils)
 add_subdirectory(firmware)
+
+if (INCLUDE_DEBUG_FEATURES)
+    add_subdirectory(utils)
+endif()
 
 set(application ${CMAKE_PROJECT_NAME})
 set(artifacts_dir ${CMAKE_BINARY_DIR}/out)

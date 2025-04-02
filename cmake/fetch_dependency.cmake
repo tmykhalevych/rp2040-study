@@ -4,7 +4,7 @@ macro(fetch_dependency_git NAME GIT_REPO GIT_TAG)
     string(TOUPPER ${NAME} NAME_UPPER)
     set(DEP_PATH "${NAME_UPPER}_PATH")
     
-    if (NOT DEFINED ${${DEP_PATH}})
+    if (NOT DEFINED ${DEP_PATH})
         message(STATUS "${NAME_UPPER}_PATH not specified, fetching ${NAME} from ${GIT_REPO}")
         
         include(FetchContent)
@@ -20,7 +20,7 @@ macro(fetch_dependency_git NAME GIT_REPO GIT_TAG)
         endif()
         
         string(TOLOWER ${NAME} NAME_LOWER)
-        set(${${DEP_PATH}} ${${NAME_LOWER}_SOURCE_DIR} CACHE PATH "Path to downloaded ${NAME}")
+        set(${DEP_PATH} ${${NAME_LOWER}_SOURCE_DIR} CACHE PATH "Path to downloaded ${NAME}")
     endif()
 
     message(STATUS "${DEP_PATH} set to '${${DEP_PATH}}'")
@@ -29,11 +29,11 @@ endmacro()
 macro(fetch_dependency_zip NAME LINK)
     string(TOUPPER ${NAME} NAME_UPPER)
     set(DEP_PATH "${NAME_UPPER}_PATH")
-    set(DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/dependencies/${NAME}")
+    set(DOWNLOAD_DIR "${FETCHCONTENT_BASE_DIR}/${NAME}")
     set(ZIP_FILE "${DOWNLOAD_DIR}/${NAME}.zip")
     set(EXTRACT_DIR "${DOWNLOAD_DIR}/src")
 
-    if (NOT DEFINED ${${DEP_PATH}})
+    if (NOT DEFINED ${DEP_PATH})
         message(STATUS "${DEP_PATH} not specified, downloading ${NAME} from ${LINK}")
 
         file(MAKE_DIRECTORY "${DOWNLOAD_DIR}")
@@ -53,7 +53,7 @@ macro(fetch_dependency_zip NAME LINK)
             message(FATAL_ERROR "Unzip failed with error ${unzip_result}")
         endif()
 
-        set(${${DEP_PATH}} ${EXTRACT_DIR} CACHE PATH "Path to downloaded ${NAME}")
+        set(${DEP_PATH} ${EXTRACT_DIR} CACHE PATH "Path to downloaded ${NAME}")
     endif()
 
     message(STATUS "${DEP_PATH} set to '${${DEP_PATH}}'")
