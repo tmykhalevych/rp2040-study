@@ -70,7 +70,6 @@ void vAssertCalled(const char* file_name, unsigned line);
 
 // Run time and task stats gathering related definitions
 #define configGENERATE_RUN_TIME_STATS           0
-#define configUSE_TRACE_FACILITY                0
 #define configUSE_STATS_FORMATTING_FUNCTIONS    0
 
 // Software timer related definitions
@@ -116,5 +115,16 @@ void vAssertCalled(const char* file_name, unsigned line);
 #define INCLUDE_xQueueGetMutexHolder            1
 
 #define pdTICKS_TO_MS(ticks)                    ((ticks) * configTICK_RATE_HZ / 1000)
+
+// Tracing utility
+#ifdef CONFIG_INCLUDE_SYSVIEW
+    #define configUSE_TRACE_FACILITY            1
+
+    #define CONFIG_SYSVIEW_CPU_FREQ             133000000 // 133 Mhz
+    #define CONFIG_SYSVIEW_TIMESTAMP_FREQ       1000000   // 1 MHz
+    #define CONFIG_SYSVIEW_RAM_BASE             0x20000000
+
+    #include "SEGGER_SYSVIEW_FreeRTOS.h"
+#endif
 
 // clang-format on

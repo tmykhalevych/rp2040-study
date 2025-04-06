@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/fetch_dependency.cmake)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
@@ -7,7 +8,11 @@ find_package(FreeRTOS  REQUIRED)
 find_package(RpPicoSDK REQUIRED)
 find_package(Etl       REQUIRED)
 
-project(rp2040-study LANGUAGES C CXX)
+if (CONFIG_INCLUDE_SYSVIEW)
+    find_package(SystemView REQUIRED)
+endif()
+
+project(${CONFIG_APP_NAME} LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 11)

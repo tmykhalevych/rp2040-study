@@ -1,5 +1,5 @@
 add_library(etl INTERFACE)
-target_include_directories(etl INTERFACE $ENV{ETL_PATH}/include)
+target_include_directories(etl INTERFACE ${ETL_PATH}/include)
 target_compile_definitions(etl INTERFACE ETL_NO_EXCEPTIONS ETL_VERBOSE_ERRORS ETL_CHECK_PUSH_POP)
 
 if (CMAKE_CXX_STANDARD GREATER_EQUAL 20)

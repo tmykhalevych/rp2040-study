@@ -12,6 +12,7 @@
 #include <led_receiver.hpp>
 #include <led_sender.hpp>
 #include <shell.hpp>
+#include <tracer.hpp>
 
 namespace fw
 {
@@ -37,6 +38,8 @@ void Firmware::root_thread()
 
     LOG_INFO("init bsp");
     ASSERT(bsp::init());
+
+    fr::tracer::init_if_enabled();
 
     LOG_INFO("init firmware");
     ASSERT(svc::create_and_start<Shell>());

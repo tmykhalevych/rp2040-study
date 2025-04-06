@@ -23,4 +23,15 @@ std::chrono::system_clock::time_point now()
 
 }  // namespace system_clock
 
+namespace hardware_clock
+{
+
+uint32_t now()
+{
+    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch())
+        .count();
+}
+
+}  // namespace hardware_clock
+
 }  // namespace bsp::chrono
