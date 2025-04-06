@@ -16,9 +16,11 @@ void init_if_enabled()
 #endif
 }
 
+#ifdef CONFIG_INCLUDE_SYSVIEW
 extern "C" U32 SEGGER_SYSVIEW_X_GetTimestamp()
 {
     return bsp::chrono::hardware_clock::now();
 }
+#endif
 
 }  // namespace fr::tracer
