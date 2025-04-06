@@ -2,7 +2,7 @@ add_subdirectory(bsp)
 add_subdirectory(freertos)
 add_subdirectory(firmware)
 
-if (INCLUDE_DEBUG_FEATURES)
+if (CONFIG_INCLUDE_DEBUG_FEATURES)
     add_subdirectory(utils)
 endif()
 

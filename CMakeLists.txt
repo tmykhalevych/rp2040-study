@@ -8,11 +8,11 @@ find_package(FreeRTOS  REQUIRED)
 find_package(RpPicoSDK REQUIRED)
 find_package(Etl       REQUIRED)
 
-if (INCLUDE_DEBUG_FEATURES)
+if (CONFIG_INCLUDE_DEBUG_FEATURES)
     find_package(SystemView REQUIRED)
 endif()
 
-project(rp2040-study LANGUAGES C CXX)
+project(${CONFIG_APP_NAME} LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 11)
