@@ -10,6 +10,7 @@ int main()
 {
     auto firmware = fw::Firmware();
     firmware.start();
+
     return 0;
 }
 

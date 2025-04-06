@@ -1,4 +1,4 @@
-set(SYSVIEW_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(SYSVIEW_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src CACHE STRING "Segger SystemView sources directory")
 
 if (NOT SYSVIEW_SRC_CONFIGURED)
     message(STATUS "Configuring Segger SystemView sources")
@@ -26,28 +26,33 @@ if (NOT SYSVIEW_SRC_CONFIGURED)
             
         string(REGEX REPLACE
             "#define SYSVIEW_APP_NAME[ \t]+\"[^\"]*\""
-            "#define SYSVIEW_APP_NAME \"${CONFIG_SYSVIEW_APP_NAME}\""
+            "#define SYSVIEW_APP_NAME \"${CONFIG_APP_NAME}\""
             FILE_CONTENTS "${FILE_CONTENTS}")
         
         string(REGEX REPLACE
             "#define SYSVIEW_DEVICE_NAME[ \t]+\"[^\"]*\""
-            "#define SYSVIEW_DEVICE_NAME \"${CONFIG_SYSVIEW_DEVICE_NAME}\""
+            "#define SYSVIEW_DEVICE_NAME \"${CONFIG_TARGET_PLATFORM}\""
+            FILE_CONTENTS "${FILE_CONTENTS}")
+
+        string(REGEX REPLACE
+            "#define[ \t]+SYSVIEW_TIMESTAMP_FREQ[ \t]+\\(configCPU_CLOCK_HZ\\)"
+            "#define SYSVIEW_TIMESTAMP_FREQ (CONFIG_SYSVIEW_TIMESTAMP_FREQ)"
+            FILE_CONTENTS "${FILE_CONTENTS}")
+
+
+        string(REGEX REPLACE
+            "#define[ \t]+SYSVIEW_CPU_FREQ[ \t]+configCPU_CLOCK_HZ"
+            "#define SYSVIEW_CPU_FREQ CONFIG_SYSVIEW_CPU_FREQ"
             FILE_CONTENTS "${FILE_CONTENTS}")
         
         string(REGEX REPLACE
             "#define SYSVIEW_RAM_BASE[ \t]+\\([^)]*\\)"
-            "#define SYSVIEW_RAM_BASE (${CONFIG_SYSVIEW_RAM_BASE})"
+            "#define SYSVIEW_RAM_BASE (CONFIG_SYSVIEW_RAM_BASE)"
             FILE_CONTENTS "${FILE_CONTENTS}")
         
         file(WRITE ${SYSVIEW_CONFIG} "${FILE_CONTENTS}")
 
-    set(SYSVIEW_SRC_CONFIGURED TRUE CACHE BOOL "Segger SystemView soutces are configured")
+    set(SYSVIEW_SRC_CONFIGURED TRUE CACHE BOOL "Segger SystemView sources are configured")
 else()
     message(STATUS "Skip configuring Segger SystemView sources")
 endif()
-
-file(GLOB SYSVIEW_SRC_FILES "${SYSVIEW_SRC_DIR}/*.c")
-
-add_library(sysview STATIC ${SYSVIEW_SRC_FILES})
-target_include_directories(sysview PUBLIC ${SYSVIEW_SRC_DIR})
-target_link_libraries(sysview PRIVATE freertos)

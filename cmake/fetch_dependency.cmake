@@ -1,4 +1,5 @@
 set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/build/dependencies CACHE STRING "")
+set(EXTERNAL_DOWNLOADS_DIR ${CMAKE_SOURCE_DIR}/build/external CACHE STRING "")
 
 macro(fetch_dependency_git NAME GIT_REPO GIT_TAG)
     string(TOUPPER ${NAME} NAME_UPPER)
@@ -29,7 +30,7 @@ endmacro()
 macro(fetch_dependency_zip NAME LINK)
     string(TOUPPER ${NAME} NAME_UPPER)
     set(DEP_PATH "${NAME_UPPER}_PATH")
-    set(DOWNLOAD_DIR "${FETCHCONTENT_BASE_DIR}/${NAME}")
+    set(DOWNLOAD_DIR "${EXTERNAL_DOWNLOADS_DIR}/${NAME}")
     set(ZIP_FILE "${DOWNLOAD_DIR}/${NAME}.zip")
     set(EXTRACT_DIR "${DOWNLOAD_DIR}/src")
 

@@ -8,7 +8,7 @@ find_package(FreeRTOS  REQUIRED)
 find_package(RpPicoSDK REQUIRED)
 find_package(Etl       REQUIRED)
 
-if (CONFIG_INCLUDE_DEBUG_FEATURES)
+if (CONFIG_INCLUDE_SYSVIEW)
     find_package(SystemView REQUIRED)
 endif()
 

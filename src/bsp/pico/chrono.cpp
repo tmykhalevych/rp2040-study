@@ -1,5 +1,6 @@
 #include <bsp/chrono.hpp>
 
+#include <hardware/clocks.h>
 #include <pico/time.h>
 
 namespace
@@ -36,5 +37,15 @@ std::chrono::system_clock::time_point now()
 }
 
 }  // namespace system_clock
+
+namespace hardware_clock
+{
+
+uint32_t now()
+{
+    return timer_hw->timelr;
+}
+
+}  // namespace hardware_clock
 
 }  // namespace bsp::chrono
